@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><title>Il mio negozio web</title></head>
+<body style="font-family: sans-serif; padding: 40px;">
+<h1>Prodotti del Database</h1>
+<button onclick="caricaDati()">Aggiorna Lista</button>
+<ul id="lista" style="margin-top:20px;"></ul>
+<script>
+async function caricaDati() {
+
+let risposta = await fetch("https://effective-space-barnacle-qv775v5wqgpgfpr6-8000.app.github.dev/prodotti");
+let prodotti = await risposta.json();
+//dobbiamo reperire l 'oggetto "lista" dall html
+let listaHtml = document.getElementById("lista");
+listaHtml.innerHTML = "";
+prodotti.forEach(p => {
+    let elemento = document.createElement("li");
+    elemento.textContent = `${p.nome} - ${p.prezzo}€`;
+    listaHtml.appendChild(elemento);
+});
+}
+</script>
+</body>
+</html>
