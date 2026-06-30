@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esercitazione Lezione 9: Login Full-Stack</title>
+</head>
+<body style="font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; line-height: 1.6;">
+
+    <h1>Sistema di Autenticazione Laboratorio</h1>
+    <p>Interfaccia di test per comunicare in background tramite Fetch API asincrona con FastAPI.</p>
+    <hr>
+
+    <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3>1. Registra un nuovo Account</h3>
+        <input type="text" id="regUser" placeholder="Scegli Username" style="padding: 5px; margin-right: 5px;">
+        <input type="password" id="regPass" placeholder="Scegli Password" style="padding: 5px; margin-right: 5px;">
+        <button onclick="eseguiRegistrazione()">Invia Registrazione</button>
+    </div>
+
+    <div style="background: #e0f2fe; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3>2. Effettua il Login</h3>
+        <input type="text" id="logUser" placeholder="Inserisci Username" style="padding: 5px; margin-right: 5px;">
+        <input type="password" id="logPass" placeholder="Inserisci Password" style="padding: 5px; margin-right: 5px;">
+        <button onclick="eseguiLogin()">Accedi</button>
+        <button onclick="eseguiLogout()" style="background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:4px; margin-left:10px; cursor:pointer;">Esci (Logout)</button>
+    </div>
+
+    <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px solid #bbf7d0;">
+        <h3>3. Area Riservata (Richiede il Token attivo)</h3>
+        <button onclick="controllaMioProfilo()" style="padding: 8px 12px; cursor:pointer;">Interroga l'endpoint protetto /profilo</button>
+        <div id="boxRisultato" style="margin-top: 15px; font-weight: bold; color: #16a34a;"></div>
+    </div>
+
+
+    <script>
+        const API_URL = "https://URL_DEL_VOSTRO_SITO";
+
+        // Funzione per inviare la richiesta di Registrazione (POST)
+        async function eseguiRegistrazione() {
+            let user = document.getElementById("regUser").value;
+            let pass = document.getElementById("regPass").value;
+
+            if(!user || !pass) { alert("Compila entrambi i campi!"); return; }
+
+            let risposta = await fetch(`${API_URL}/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+
+            let dati = await risposta.json();
+            
+            if(risposta.ok) {
+                alert("Ottimo! " + dati.status);
+                document.getElementById("regUser").value = "";
+                document.getElementById("regPass").value = "";
+            } else {
+                alert("Errore: " + dati.detail);
+            }
+        }
+
+        // Funzione per il Login: riceve il token dal Back-end e lo mette nel "portafoglio" del browser
+        async function eseguiLogin() {
+            let user = document.getElementById("logUser").value;
+            let pass = document.getElementById("logPass").value;
+
+            if(!user || !pass) { alert("Inserisci le tue credenziali!"); return; }
+
+            let risposta = await fetch(`${API_URL}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+
+            let dati = await risposta.json();
+
+            if(risposta.ok) {
+                // FASE 6: Salviamo la stringa anonima del token nel localStorage del browser
+                localStorage.setItem("session_token", dati.token);
+                alert("Accesso autorizzato! Il token è stato memorizzato nel browser.");
+                document.getElementById("logUser").value = "";
+                document.getElementById("logPass").value = "";
+            } else {
+                alert("Accesso negato: " + dati.detail);
+            }
+        }
+
+        // ESERCITAZIONE 5 (Riflesso Front-end): Interroga la rotta privata passando il token nell'URL
+        async function controllaMioProfilo() {
+            // Estraiamo il token precedentemente salvato nel localStorage
+            let tokenSalvato = localStorage.getItem("session_token");
+            let outputBox = document.getElementById("boxRisultato");
+
+            if(!tokenSalvato) {
+                outputBox.style.color = "#dc2626";
+                outputBox.textContent = "Bloccato! Non hai nessun token nel browser. Effettua prima il login.";
+                return;
+            }
+
+            // Inviamo il token anonimo nell'URL come Query Parameter (?token=...)
+            let risposta = await fetch(`${API_URL}/profilo?token=${tokenSalvato}`);
+            let dati = await risposta.json();
+
+            if(risposta.ok) {
+                outputBox.style.color = "#16a34a";
+                outputBox.textContent = `Successo! Server dice: Benvenuto Utente #${dati.utente_id} (${dati.username})`;
+            } else {
+                outputBox.style.color = "#dc2626";
+                outputBox.textContent = "Errore Server 401: " + dati.detail;
+            }
+        }
+
+        // Funzione di Logout: cancella le tracce dal browser
+        function eseguiLogout() {
+            localStorage.removeItem("session_token");
+            document.getElementById("boxRisultato").textContent = "";
+            alert("Sessione chiusa. Il token è stato rimosso dal localStorage.");
+        }
+    </script>
+</body>
+</html>

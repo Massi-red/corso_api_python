@@ -5,20 +5,46 @@
 <h1>Prodotti del Database</h1>
 <button onclick="caricaDati()">Aggiorna Lista</button>
 <ul id="lista" style="margin-top:20px;"></ul>
+<br /><br />
+<div style="margin-bottom: 30px; background: #f1f5f9; padding: 20px; border-radius: 8px;">
+<h3>Aggiungi Nuovo Prodotto</h3>
+<input type="text" id="nuovoNome" placeholder="Nome Prodotto">
+<input type="number" id="nuovoPrezzo" placeholder="Prezzo (€)">
+<button onclick="inviaDati()">Salva nel Database</button>
+</div>
+
 <script>
 async function caricaDati() {
+	// 1. Chiediamo i dati alla nostra API funzionante sulla porta 8000
+	let risposta = await fetch("https://URL_DEL_VOSTRO_SITO/prodotti");
+	// 2. Trasformiamo il testo JSON ricevuto in un array JavaScript
+	let prodotti = await risposta.json();
 
-let risposta = await fetch("https://effective-space-barnacle-qv775v5wqgpgfpr6-8000.app.github.dev/prodotti");
-let prodotti = await risposta.json();
-//dobbiamo reperire l 'oggetto "lista" dall html
-let listaHtml = document.getElementById("lista");
-listaHtml.innerHTML = "";
-prodotti.forEach(p => {
-    let elemento = document.createElement("li");
-    elemento.textContent = `${p.nome} - ${p.prezzo}€`;
-    listaHtml.appendChild(elemento);
-});
+	let listaHtml = document.getElementById("lista");
+	listaHtml.innerHTML = ""; // Svuotiamo la lista per non duplicare
+
+	// 3. Clicliamo i dati e creiamo i nodi HTML al volo
+	prodotti.forEach(p => {
+		let elemento = document.createElement("li");
+		elemento.textContent = `${p.nome} - ${p.prezzo} €`;
+		listaHtml.appendChild(elemento);
+	});
+}
+
+async function inviaDati() {
+	let nomeInput = document.getElementById("nuovoNome").value;
+	let prezzoInput = parseFloat(document.getElementById("nuovoPrezzo").value);
+
+	// Prepariamo la fetch configurando il metodo POST e gli header per il JSON
+	await fetch("https://URL_DEL_VOSTRO_SITO/prodotti", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ nome: nomeInput, prezzo: prezzoInput })
+	});
+
+	alert("Prodotto salvato!");
 }
 </script>
+
 </body>
 </html>

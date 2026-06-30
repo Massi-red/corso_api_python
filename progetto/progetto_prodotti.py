@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from .progetto_classi_validazione import ProdottoIn
 import sqlite3
+
+# Creo il mini-gestore delle rotte
 router = APIRouter()
-
-
 
 # Espongo la chiamata per listare i prodotti
 @router.get("/prodotti")

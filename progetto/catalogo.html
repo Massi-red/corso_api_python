@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManiaci - Catalogo Locale</title>
+</head>
+<body style="font-family: sans-serif; max-width: 900px; margin: 30px auto; padding: 20px; line-height: 1.5;">
+ 
+    <h1>🎬 CineManiaci - Cerca Film</h1>
+    <p>Cerca i titoli archiviati all'interno del database locale della piattaforma.</p>
+   
+    <div style="margin-bottom: 30px; background: #f1f5f9; padding: 15px; border-radius: 6px;">
+        <input type="text" id="campoCerca" placeholder="Scrivi una parte del titolo (es. Matrix)..." style="padding: 8px; width: 300px; font-size: 14px;">
+        <button onclick="avviaRicerca()" style="padding: 8px 15px; font-size: 14px; cursor: pointer;">Cerca</button>
+    </div>
+ 
+    <h2>Risultati della Ricerca</h2>
+    <div id="risultati" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px;">
+        </div>
+ 
+    <hr>
+ 
+    <div id="schedaFilm" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 25px; border-radius: 8px;">
+        <h2 id="schedaTitolo" style="color: #16a34a; margin-top: 0;"></h2>
+        <p><b>Anno di Uscita:</b> <span id="schedaAnno"></span></p>
+        <p><b>Trama del Film:</b></p>
+        <p id="schedaTrama" style="font-style: italic; color: #374151;"></p>
+    </div>
+ 
+<input type="text" id="campoCerca" placeholder="Digita titolo film...">
+<button onclick="avviaRicerca()">Cerca nel Database</button>
+<!-- Contenitore in cui inietteremo le locandine e i bottoni -->
+<div id="risultati" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top:20px;"></div>
+   
+   <script>
+        const API_URL = "https://effective-space-barnacle-qv775v5wqgpgfpr6-8000.app.github.dev";
+ 
+        async function avviaRicerca() {
+ 
+        // ✅ Leggo il testo ricercato dall’utente
+        const keyword = document.getElementById("campoCerca").value;
+ 
+        // Controllo campo vuoto
+        if (!keyword.trim()) {
+            alert("Inserisci un testo per la ricerca!");
+            return;
+        }
+ 
+        try {
+            // Nascondo la scheda precedente prima di mostrare i nuovi risultati
+            document.getElementById("schedaFilm").style.display = "none";
+
+            // ✅ Effettuo la chiamata al backend
+            const response = await fetch(`${API_URL}/film/ricerca?keyword=${encodeURIComponent(keyword)}`);
+            const risultati = await response.json();
+ 
+            const contenitore = document.getElementById("risultati");
+ 
+            // ✅ Pulisco i vecchi risultati
+            contenitore.innerHTML = "";
+ 
+            // ✅ Controllo se non ci sono risultati
+            if (risultati.length === 0) {
+                contenitore.innerHTML = "<p>Nessun film trovato.</p>";
+                return;
+            }
+ 
+            // ✅ Ciclo l'array dei film
+            risultati.forEach(film => {
+ 
+                // ✅ Creo il div per ogni film
+                const divFilm = document.createElement("div");
+ 
+                divFilm.style.border = "1px solid #ccc";
+                divFilm.style.padding = "10px";
+                divFilm.style.borderRadius = "6px";
+                divFilm.style.cursor = "pointer";
+ 
+                // ✅ Preparo il contenuto
+                divFilm.innerHTML = `
+                    <h3>${film.titolo}</h3>
+                    <p><b>Anno:</b> ${film.anno}</p>
+                    <button onclick="apriScheda(${film.id})">Dettagli</button>
+                `;
+ 
+                // Click per aprire scheda
+                divFilm.onclick = () => apriScheda(film.id);
+ 
+                // ✅ Aggiungo al contenitore
+                contenitore.appendChild(divFilm);
+            });
+ 
+        } catch (errore) {
+            console.error("Errore:", errore);
+            document.getElementById("risultati").innerHTML =
+                "<p>Errore durante la ricerca.</p>";
+        }
+    }
+    async function apriScheda(idFilm) {
+        try {
+            const response = await fetch(`${API_URL}/film/${idFilm}`);
+            const film = await response.json();
+ 
+            document.getElementById("schedaTitolo").textContent = film.titolo;
+            document.getElementById("schedaAnno").textContent = film.anno;
+            document.getElementById("schedaTrama").textContent = film.trama;
+ 
+            document.getElementById("schedaFilm").style.display = "block";
+        } catch (errore) {
+            console.error("Errore:", errore);
+            alert("Errore nel recupero dei dettagli del film.");
+        }
+    }
+    </script>
+</body>
+</html>
+ 
