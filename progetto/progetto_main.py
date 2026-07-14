@@ -6,6 +6,7 @@ from .progetto_prodotti import router as prodotti_router
 from .progetto_utente import router as utente_router
 from .progetto_db import dbinit
 from .progetto_film import router as film_router
+from .progetto_playlist import router as playlist_router
 
 # Inizializzo il DB
 dbinit()
@@ -24,6 +25,7 @@ app.add_middleware(
 app.include_router(prodotti_router)
 app.include_router(utente_router)
 app.include_router(film_router)
+app.include_router(playlist_router)
 # Creo una chiamata base di benvenuto
 @app.get("/")
 def root():

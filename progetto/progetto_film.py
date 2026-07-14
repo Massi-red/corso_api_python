@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException
 import sqlite3
+import json
+import urllib.request
+import urllib.parse
  
 # Creo il mini-gestore delle rotte
 router = APIRouter()
@@ -43,4 +46,34 @@ def get_film(id: int):
     if not film:
         raise HTTPException(status_code=404, detail="Film non trovato")
     return film
+
+
+@router.get("/film/esterni")
+def cerca_film_esterni(keyword: str):
+    if not keyword or not keyword.strip():
+        raise HTTPException(status_code=400, detail="La keyword è obbligatoria")
+
+    query = urllib.parse.quote(keyword)
+    url = f"https://www.omdbapi.com/?s={query}&apikey=4f3f3d8b"
+
+    try:
+        with urllib.request.urlopen(url, timeout=10) as risposta:
+            dati = json.load(risposta)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Errore nella chiamata API: {exc}") from exc
+
+    if dati.get("Response") != "True":
+        return []
+
+    risultati = []
+    for item in dati.get("Search", []):
+        risultati.append({
+            "titolo": item.get("Title"),
+            "anno": item.get("Year"),
+            "tipo": item.get("Type"),
+            "poster": item.get("Poster"),
+            "imdb_id": item.get("imdbID"),
+        })
+
+    return risultati
     
