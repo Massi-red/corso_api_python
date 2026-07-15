@@ -27,7 +27,15 @@ def dbinit():
         )
     """)
  
-    # QUERY PER INSERIRE I FILM
+    # TABELLA UTENTI: gestione account e token di sessione
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS utenti (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            token TEXT
+        )
+    """)    # QUERY PER INSERIRE I FILM
     cursor.execute("SELECT COUNT(*) FROM film")
     if cursor.fetchone()[0] == 0:
         # Lista di 15 tuple (titolo, trama, anno, url_locandina, tmdb_id)

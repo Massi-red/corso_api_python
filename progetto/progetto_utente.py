@@ -9,6 +9,28 @@ import secrets
 # Creo il mini-gestore delle rotte
 router = APIRouter()
 
+
+def ensure_utenti_table():
+    """Crea la tabella `utenti` se non esiste. Chiamata prima di operazioni sul DB."""
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS utenti (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            token TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+# Assicuriamoci che la tabella esista quando il modulo viene importato
+ensure_utenti_table()
+
+
+
 def calcola_hash(password_chiaro: str) -> str:
     # Trasformiamo la stringa di testo in byte (formato UTF-8)
     password_bytes = password_chiaro.encode('utf-8')
@@ -20,6 +42,9 @@ def registra_utente(dati: UtenteAuth):
     # Cifriamo la password prima di mandarla al database
     password_sicura = calcola_hash(dati.password)
     
+    # Assicuriamoci che la tabella esista (utile se il DB è nuovo)
+    ensure_utenti_table()
+
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     
@@ -37,6 +62,40 @@ def registra_utente(dati: UtenteAuth):
     
     conn.close()
     return {"status": "Utente registrato con successo!"}
+
+
+if __name__ == "__main__":
+    # Piccolo CLI per operazioni rapide dalla cartella `progetto`
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Utility per la tabella utenti")
+    sub = parser.add_subparsers(dest="cmd")
+
+    sub.create_table = sub.add_parser("create-table", help="Crea la tabella utenti nel database")
+    reg = sub.add_parser("register", help="Registra un nuovo utente")
+    reg.add_argument("username", help="Username da registrare")
+    reg.add_argument("password", help="Password in chiaro")
+
+    args = parser.parse_args()
+    if args.cmd == "create-table":
+        ensure_utenti_table()
+        print("Tabella 'utenti' verificata/creata con successo.")
+    elif args.cmd == "register":
+        ensure_utenti_table()
+        user = args.username
+        pwd_hash = calcola_hash(args.password)
+        conn = sqlite3.connect("database.db")
+        cur = conn.cursor()
+        try:
+            cur.execute("INSERT INTO utenti (username, password_hash) VALUES (?, ?)", (user, pwd_hash))
+            conn.commit()
+            print(f"Utente '{user}' registrato con id {cur.lastrowid}.")
+        except sqlite3.IntegrityError:
+            print(f"Errore: lo username '{user}' esiste già.")
+        finally:
+            conn.close()
+    else:
+        parser.print_help()
 
 @router.post("/login")
 def login_utente(dati: UtenteAuth):
