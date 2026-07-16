@@ -133,6 +133,23 @@ def elenca_playlist():
     return [_serializza_playlist(row) for row in playlist]
 
 
+# Mostra solo le playlist create dall'utente loggato (pubbliche + private),
+# come richiesto dalla Lezione 11, Fase 3.
+@router.get("/playlist/mie", tags=["playlist"])
+def elenca_mie_playlist(token: str):
+    utente = _ottieni_utente_da_token(token)
+    if utente is None:
+        raise HTTPException(status_code=401, detail="Sessione non valida. Effettua il login.")
+
+    conn = _connessione_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM playlist WHERE proprietario_id = ? ORDER BY id DESC", (utente["id"],))
+    playlist = cursor.fetchall()
+    conn.close()
+
+    return [_serializza_playlist(row) for row in playlist]
+
+
 @router.get("/playlist/{playlist_id}", tags=["playlist"])
 def dettaglio_playlist(playlist_id: int, token: Optional[str] = None):
     playlist = _ottieni_playlist_per_id(playlist_id)

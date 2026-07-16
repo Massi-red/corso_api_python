@@ -1,4 +1,7 @@
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 import sqlite3
 import json
 import urllib.request
@@ -6,6 +9,15 @@ import urllib.parse
  
 # Creo il mini-gestore delle rotte
 router = APIRouter()
+
+
+class FilmIn(BaseModel):
+    titolo: str
+    trama: Optional[str] = None
+    anno: Optional[int] = None
+    url_locandina: Optional[str] = None
+    tmdb_id: Optional[str] = None
+
  
 # Espongo la chiamata per listare i prodotti
 @router.get("/film")
@@ -46,6 +58,23 @@ def get_film(id: int):
     if not film:
         raise HTTPException(status_code=404, detail="Film non trovato")
     return dict(film)
+
+
+# Creazione manuale di un film: usata quando l'utente non trova il film cercato
+# nel DB locale (né tra i risultati esterni) e vuole aggiungerlo a mano.
+@router.post("/film", status_code=201, tags=["film"])
+def crea_film(dati: FilmIn):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO film (titolo, trama, anno, url_locandina, tmdb_id) VALUES (?, ?, ?, ?, ?)",
+        (dati.titolo, dati.trama, dati.anno, dati.url_locandina, dati.tmdb_id),
+    )
+    conn.commit()
+    nuovo_id = cursor.lastrowid
+    conn.close()
+
+    return {"message": "Film aggiunto con successo", "id": nuovo_id, "titolo": dati.titolo}
 
 
 @router.get("/film/esterni")
