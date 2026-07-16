@@ -15,7 +15,7 @@ def root():
 
 
 @app.get("/utente")
-def root():
+def utente_info():
     return {"nome":"massimiliano", "cognome":"nardinocchi"}
 
 
@@ -44,7 +44,7 @@ def ottieni_prodotti():
     cursor.execute("SELECT * FROM prodotti")
     risultato = cursor.fetchall()
     conn.close()
-    return risultato
+    return [dict(row) for row in risultato]
 
 @app.get("/prodotti/ricerca")
 def cerca_prodotto(keyword: str):
@@ -57,7 +57,7 @@ def cerca_prodotto(keyword: str):
     )
     risultati = cursor.fetchall()
     conn.close()
-    return risultati
+    return [dict(row) for row in risultati]
 
 @app.post("/prodotti", status_code=201)
 def crea_prodotto(dati: ProdottoIn):

@@ -28,7 +28,7 @@ def lista_film():
     cursor.execute("SELECT * FROM film")
     risultato = cursor.fetchall()
     conn.close()
-    return risultato
+    return [dict(row) for row in risultato]
  
 @router.get("/film/ricerca")
 def cerca_film(keyword: str):
@@ -41,7 +41,7 @@ def cerca_film(keyword: str):
     )
     risultati = cursor.fetchall()
     conn.close()
-    return risultati
+    return [dict(row) for row in risultati]
 
 @router.get("/film/{id}")
 def get_film(id: int):
@@ -57,7 +57,7 @@ def get_film(id: int):
     conn.close()
     if not film:
         raise HTTPException(status_code=404, detail="Film non trovato")
-    return film
+    return dict(film)
 
 
 # Creazione manuale di un film: usata quando l'utente non trova il film cercato
