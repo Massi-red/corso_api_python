@@ -3,51 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esercitazione Lezione 9: Login Full-Stack</title>
+    <title>CineManiaci - Accedi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #EDEDE7;
+            --card: #FFFFFF;
+            --ink: #1B1B1B;
+            --ink-muted: #5C6B73;
+            --red: #C1272D;
+            --sage: #4F7942;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            min-height: 100vh;
+        }
+
+        .top-nav {
+            background: var(--ink);
+            border-bottom: 3px solid var(--red);
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .brand {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-weight: 900;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .nav-links { display: flex; gap: 4px; }
+
+        .nav-links a {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            font-size: 11.5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #C9C9C0;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-bottom: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #fff;
+            border-bottom-color: var(--red);
+        }
+
+        .ruler-divider {
+            height: 9px;
+            background-image: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 14px);
+            opacity: 0.35;
+        }
+
+        main {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 50px 20px 80px;
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+            color: var(--red);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 46px;
+            line-height: 1.05;
+            margin: 0 0 8px;
+        }
+
+        .page-sub {
+            color: var(--ink-muted);
+            font-size: 14.5px;
+            margin-bottom: 34px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--ink);
+            box-shadow: 5px 5px 0 var(--ink);
+            padding: 26px;
+            margin-bottom: 30px;
+        }
+
+        .card h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 20px;
+            margin: 0 0 4px;
+        }
+
+        .card .hint {
+            font-size: 13px;
+            color: var(--ink-muted);
+            margin: 0 0 18px;
+        }
+
+        .field-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input {
+            background: #fff;
+            border: 1px solid var(--ink);
+            color: var(--ink);
+            padding: 11px 13px;
+            border-radius: 0;
+            font-family: var(--font-body);
+            font-size: 14px;
+            flex: 1 1 190px;
+        }
+
+        input:focus {
+            outline: 2px solid var(--red);
+            outline-offset: 1px;
+        }
+
+        .btn {
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 11.5px;
+            letter-spacing: 0.8px;
+            padding: 11px 20px;
+            border: 1px solid var(--ink);
+            border-radius: 0;
+            cursor: pointer;
+            background: var(--ink);
+            color: #fff;
+            transition: all .15s;
+            white-space: nowrap;
+        }
+
+        .btn:hover { background: var(--red); border-color: var(--red); }
+
+        .btn-outline { background: transparent; color: var(--ink); }
+        .btn-outline:hover { background: var(--ink); color: #fff; }
+
+        .btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+        .btn-danger:hover { background: var(--red); color: #fff; }
+
+        .result-box {
+            margin-top: 18px;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: 13.5px;
+            min-height: 20px;
+        }
+
+        .result-ok { color: var(--sage); }
+        .result-err { color: var(--red); }
+    </style>
 </head>
-<body style="font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; line-height: 1.6;">
+<body>
 
-    <nav style="margin-bottom: 20px;">
-        <a href="login.html">Login</a> |
-        <a href="catalogo.html">Catalogo</a> |
-        <a href="playlist.html">Le mie Playlist</a>
+    <nav class="top-nav">
+        <span class="brand">CineManiaci</span>
+        <div class="nav-links">
+            <a href="login.html" class="active">Accedi</a>
+            <a href="catalogo.html">Catalogo</a>
+            <a href="playlist.html">Le mie Playlist</a>
+        </div>
     </nav>
+    <div class="ruler-divider"></div>
 
-    <h1>Sistema di Autenticazione Laboratorio</h1>
-    <p>Interfaccia di test per comunicare in background tramite Fetch API asincrona con FastAPI.</p>
-    <hr>
+    <main>
+        <div class="eyebrow">Accesso riservato</div>
+        <h1 class="page-title">Bentornato<br>al cinema.</h1>
+        <p class="page-sub">Accedi o registrati per creare le tue playlist e commentare i film.</p>
 
-    <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-        <h3>1. Registra un nuovo Account</h3>
-        <input type="text" id="regUser" placeholder="Scegli Username" style="padding: 5px; margin-right: 5px;">
-        <input type="password" id="regPass" placeholder="Scegli Password" style="padding: 5px; margin-right: 5px;">
-        <button onclick="eseguiRegistrazione()">Invia Registrazione</button>
-    </div>
+        <div class="card">
+            <h3>Nuovo qui? Registrati</h3>
+            <p class="hint">Crea un account per iniziare a costruire le tue playlist.</p>
+            <div class="field-row">
+                <input type="text" id="regUser" placeholder="Scegli uno username">
+                <input type="password" id="regPass" placeholder="Scegli una password">
+                <button class="btn" onclick="eseguiRegistrazione()">Registrati</button>
+            </div>
+        </div>
 
-    <div style="background: #e0f2fe; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-        <h3>2. Effettua il Login</h3>
-        <input type="text" id="logUser" placeholder="Inserisci Username" style="padding: 5px; margin-right: 5px;">
-        <input type="password" id="logPass" placeholder="Inserisci Password" style="padding: 5px; margin-right: 5px;">
-        <button onclick="eseguiLogin()">Accedi</button>
-        <button onclick="eseguiLogout()" style="background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:4px; margin-left:10px; cursor:pointer;">Esci (Logout)</button>
-    </div>
+        <div class="card">
+            <h3>Hai già un account? Accedi</h3>
+            <p class="hint">Inserisci le tue credenziali per ottenere il tuo token di sessione.</p>
+            <div class="field-row">
+                <input type="text" id="logUser" placeholder="Username">
+                <input type="password" id="logPass" placeholder="Password">
+                <button class="btn" onclick="eseguiLogin()">Accedi</button>
+                <button class="btn btn-danger" onclick="eseguiLogout()">Esci</button>
+            </div>
+        </div>
 
-    <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px solid #bbf7d0;">
-        <h3>3. Area Riservata (Richiede il Token attivo)</h3>
-        <button onclick="controllaMioProfilo()" style="padding: 8px 12px; cursor:pointer;">Interroga l'endpoint protetto /profilo</button>
-        <div id="boxRisultato" style="margin-top: 15px; font-weight: bold; color: #16a34a;"></div>
-    </div>
-
+        <div class="card">
+            <h3>Area riservata</h3>
+            <p class="hint">Verifica che il tuo token sia attivo interrogando il profilo protetto.</p>
+            <button class="btn btn-outline" onclick="controllaMioProfilo()">Controlla il mio profilo</button>
+            <div id="boxRisultato" class="result-box"></div>
+        </div>
+    </main>
 
     <script>
         const API_URL = "https://effective-space-barnacle-qv775v5wqgpgfpr6-8000.app.github.dev";
 
-        // Funzione per inviare la richiesta di Registrazione (POST)
         async function eseguiRegistrazione() {
             let user = document.getElementById("regUser").value;
             let pass = document.getElementById("regPass").value;
 
-            if(!user || !pass) { alert("Compila entrambi i campi!"); return; }
+            if (!user || !pass) { alert("Compila entrambi i campi!"); return; }
 
             let risposta = await fetch(`${API_URL}/register`, {
                 method: "POST",
@@ -56,8 +249,8 @@
             });
 
             let dati = await risposta.json();
-            
-            if(risposta.ok) {
+
+            if (risposta.ok) {
                 alert("Ottimo! " + dati.status);
                 document.getElementById("regUser").value = "";
                 document.getElementById("regPass").value = "";
@@ -66,12 +259,11 @@
             }
         }
 
-        // Funzione per il Login: riceve il token dal Back-end e lo mette nel "portafoglio" del browser
         async function eseguiLogin() {
             let user = document.getElementById("logUser").value;
             let pass = document.getElementById("logPass").value;
 
-            if(!user || !pass) { alert("Inserisci le tue credenziali!"); return; }
+            if (!user || !pass) { alert("Inserisci le tue credenziali!"); return; }
 
             let risposta = await fetch(`${API_URL}/login`, {
                 method: "POST",
@@ -81,8 +273,7 @@
 
             let dati = await risposta.json();
 
-            if(risposta.ok) {
-                // FASE 6: Salviamo la stringa anonima del token nel localStorage del browser
+            if (risposta.ok) {
                 localStorage.setItem("session_token", dati.token);
                 alert("Accesso autorizzato! Il token è stato memorizzato nel browser.");
                 document.getElementById("logUser").value = "";
@@ -92,32 +283,28 @@
             }
         }
 
-        // ESERCITAZIONE 5 (Riflesso Front-end): Interroga la rotta privata passando il token nell'URL
         async function controllaMioProfilo() {
-            // Estraiamo il token precedentemente salvato nel localStorage
             let tokenSalvato = localStorage.getItem("session_token");
             let outputBox = document.getElementById("boxRisultato");
 
-            if(!tokenSalvato) {
-                outputBox.style.color = "#dc2626";
+            if (!tokenSalvato) {
+                outputBox.className = "result-box result-err";
                 outputBox.textContent = "Bloccato! Non hai nessun token nel browser. Effettua prima il login.";
                 return;
             }
 
-            // Inviamo il token anonimo nell'URL come Query Parameter (?token=...)
             let risposta = await fetch(`${API_URL}/profilo?token=${tokenSalvato}`);
             let dati = await risposta.json();
 
-            if(risposta.ok) {
-                outputBox.style.color = "#16a34a";
+            if (risposta.ok) {
+                outputBox.className = "result-box result-ok";
                 outputBox.textContent = `Successo! Server dice: Benvenuto Utente #${dati.utente_id} (${dati.username})`;
             } else {
-                outputBox.style.color = "#dc2626";
+                outputBox.className = "result-box result-err";
                 outputBox.textContent = "Errore Server 401: " + dati.detail;
             }
         }
 
-        // Funzione di Logout: cancella le tracce dal browser
         function eseguiLogout() {
             localStorage.removeItem("session_token");
             document.getElementById("boxRisultato").textContent = "";

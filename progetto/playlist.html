@@ -4,64 +4,404 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineManiaci - Le mie Playlist</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #EDEDE7;
+            --card: #FFFFFF;
+            --ink: #1B1B1B;
+            --ink-muted: #5C6B73;
+            --red: #C1272D;
+            --sage: #4F7942;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            min-height: 100vh;
+        }
+
+        .top-nav {
+            background: var(--ink);
+            border-bottom: 3px solid var(--red);
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .brand {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-weight: 900;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .nav-links { display: flex; gap: 4px; }
+
+        .nav-links a {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            font-size: 11.5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #C9C9C0;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-bottom: 2px solid transparent;
+            transition: all .15s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #fff;
+            border-bottom-color: var(--red);
+        }
+
+        .ruler-divider {
+            height: 9px;
+            background-image: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 14px);
+            opacity: 0.35;
+        }
+
+        main {
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 50px 20px 90px;
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+            color: var(--red);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 46px;
+            line-height: 1.05;
+            margin: 0 0 8px;
+        }
+
+        .page-sub {
+            color: var(--ink-muted);
+            font-size: 14.5px;
+            margin-bottom: 30px;
+        }
+
+        #messaggioLogin {
+            display: none;
+            background: var(--card);
+            border: 1px solid var(--red);
+            box-shadow: 5px 5px 0 var(--red);
+            color: var(--red);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: 13.5px;
+            padding: 18px 22px;
+        }
+
+        #messaggioLogin a { color: var(--ink); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--ink);
+            box-shadow: 5px 5px 0 var(--ink);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .card h3 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 21px;
+            margin: 0 0 16px;
+        }
+
+        .field-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input, textarea {
+            background: #fff;
+            border: 1px solid var(--ink);
+            color: var(--ink);
+            padding: 11px 13px;
+            border-radius: 0;
+            font-family: var(--font-body);
+            font-size: 14px;
+        }
+
+        input:focus, textarea:focus {
+            outline: 2px solid var(--red);
+            outline-offset: 1px;
+        }
+
+        .field-row input[type="text"] { flex: 1 1 180px; }
+
+        label.check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            color: var(--ink-muted);
+        }
+
+        .btn {
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 11.5px;
+            letter-spacing: 0.8px;
+            padding: 11px 20px;
+            border: 1px solid var(--ink);
+            border-radius: 0;
+            cursor: pointer;
+            background: var(--ink);
+            color: #fff;
+            transition: all .15s;
+            white-space: nowrap;
+        }
+
+        .btn:hover { background: var(--red); border-color: var(--red); }
+
+        .btn-outline { background: transparent; color: var(--ink); }
+        .btn-outline:hover { background: var(--ink); color: #fff; }
+
+        .btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+        .btn-danger:hover { background: var(--red); color: #fff; }
+
+        .btn-sm { padding: 6px 12px; font-size: 10.5px; }
+
+        h2.section-title {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 28px;
+            margin: 40px 0 16px;
+        }
+
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 22px;
+            margin-bottom: 14px;
+        }
+
+        .playlist-card {
+            background: var(--card);
+            border: 1px solid var(--ink);
+            box-shadow: 5px 5px 0 var(--ink);
+            padding: 18px;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .playlist-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0 var(--red);
+        }
+
+        .playlist-card h4 {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 19px;
+            margin: 0 0 6px;
+        }
+
+        .playlist-card p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--ink-muted);
+        }
+
+        .playlist-card .count {
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--red);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .empty-note {
+            color: var(--ink-muted);
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .ticket {
+            background: var(--card);
+            border: 1px solid var(--ink);
+            box-shadow: 7px 7px 0 var(--ink);
+            padding: 30px;
+            display: none;
+        }
+
+        .ticket-top {
+            border-bottom: 2px dashed var(--ink);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ticket-top h2 {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 32px;
+            margin: 0 0 6px;
+        }
+
+        .ticket-top p {
+            color: var(--ink-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        h3.sub-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 20px;
+            margin: 24px 0 12px;
+        }
+
+        #dettaglioFilmLista {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 8px;
+        }
+
+        #dettaglioFilmLista li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg);
+            border: 1px solid var(--ink);
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .search-inline {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        #risultatiRicercaFilm > div {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg);
+            border: 1px solid var(--ink);
+            padding: 9px 14px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .manual-box {
+            background: var(--bg);
+            border: 1px solid var(--ink);
+            padding: 18px;
+        }
+
+        .manual-box input, .manual-box textarea {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .manual-box textarea { height: 60px; resize: vertical; }
+    </style>
 </head>
-<body style="font-family: sans-serif; max-width: 900px; margin: 30px auto; padding: 20px; line-height: 1.5;">
+<body>
 
-    <nav style="margin-bottom: 20px;">
-        <a href="login.html">Login</a> |
-        <a href="catalogo.html">Catalogo</a> |
-        <a href="playlist.html">Le mie Playlist</a>
-    </nav>
-
-    <h1>🎞️ Le mie Playlist</h1>
-    <p id="messaggioLogin" style="color:#dc2626; font-weight:bold; display:none;">
-        Devi effettuare il <a href="login.html">login</a> per vedere e creare le tue playlist.
-    </p>
-
-    <div id="areaPlaylist" style="display:none;">
-
-        <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
-            <h3 style="margin-top:0;">Crea una nuova Playlist</h3>
-            <input type="text" id="nuovoNome" placeholder="Nome playlist" style="padding: 6px; margin-right: 5px;">
-            <input type="text" id="nuovaDescrizione" placeholder="Descrizione (opzionale)" style="padding: 6px; margin-right: 5px;">
-            <label><input type="checkbox" id="nuovoPubblico" checked> Pubblica</label>
-            <button onclick="creaPlaylist()" style="padding: 6px 12px; cursor:pointer;">Crea</button>
+    <nav class="top-nav">
+        <span class="brand">CineManiaci</span>
+        <div class="nav-links">
+            <a href="login.html">Accedi</a>
+            <a href="catalogo.html">Catalogo</a>
+            <a href="playlist.html" class="active">Le mie Playlist</a>
         </div>
+    </nav>
+    <div class="ruler-divider"></div>
 
-        <h2>Le mie liste</h2>
-        <div id="listaPlaylist" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;"></div>
+    <main>
+        <div class="eyebrow">Le tue raccolte</div>
+        <h1 class="page-title">Le mie playlist</h1>
+        <p class="page-sub">Organizza i tuoi film preferiti in raccolte personalizzate.</p>
 
-        <hr>
+        <p id="messaggioLogin">
+            Devi effettuare il <a href="login.html">login</a> per vedere e creare le tue playlist.
+        </p>
 
-        <!-- Dettaglio playlist selezionata -->
-        <div id="dettaglioPlaylist" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:20px; border-radius:8px;">
-            <h2 id="dettaglioNome" style="color:#16a34a; margin-top:0;"></h2>
-            <p id="dettaglioDescrizione" style="font-style: italic;"></p>
+        <div id="areaPlaylist" style="display:none;">
 
-            <h3>Film nella playlist</h3>
-            <ul id="dettaglioFilmLista"></ul>
+            <div class="card">
+                <h3>Crea una nuova playlist</h3>
+                <div class="field-row">
+                    <input type="text" id="nuovoNome" placeholder="Nome playlist">
+                    <input type="text" id="nuovaDescrizione" placeholder="Descrizione (opzionale)">
+                    <label class="check"><input type="checkbox" id="nuovoPubblico" checked> Pubblica</label>
+                    <button class="btn" onclick="creaPlaylist()">Crea</button>
+                </div>
+            </div>
 
-            <h3>Aggiungi un film dal catalogo</h3>
-            <input type="text" id="campoCercaFilm" placeholder="Cerca titolo nel database..." style="padding: 6px; width: 260px;">
-            <button onclick="cercaFilmPerPlaylist()" style="padding: 6px 12px; cursor:pointer;">Cerca</button>
-            <div id="risultatiRicercaFilm" style="margin-top: 10px;"></div>
+            <h2 class="section-title">Le mie liste</h2>
+            <div id="listaPlaylist" class="playlist-grid"></div>
 
-            <h3>Il film non c'è? Aggiungilo manualmente</h3>
-            <div style="background:#e0f2fe; padding:15px; border-radius:6px;">
-                <input type="text" id="manualeTitolo" placeholder="Titolo" style="padding:6px; margin-bottom:6px; width:220px;"><br>
-                <input type="number" id="manualeAnno" placeholder="Anno" style="padding:6px; margin-bottom:6px; width:220px;"><br>
-                <input type="text" id="manualeLocandina" placeholder="URL locandina (opzionale)" style="padding:6px; margin-bottom:6px; width:220px;"><br>
-                <textarea id="manualeTrama" placeholder="Trama (opzionale)" style="padding:6px; margin-bottom:6px; width:220px; height:50px;"></textarea><br>
-                <button onclick="aggiungiFilmManuale()" style="padding: 6px 12px; cursor:pointer;">Aggiungi e inserisci in playlist</button>
+            <div id="dettaglioPlaylist" class="ticket">
+                <div class="ticket-top">
+                    <h2 id="dettaglioNome"></h2>
+                    <p id="dettaglioDescrizione"></p>
+                </div>
+
+                <h3 class="sub-title">Film nella playlist</h3>
+                <ul id="dettaglioFilmLista"></ul>
+
+                <h3 class="sub-title">Aggiungi un film dal catalogo</h3>
+                <div class="search-inline">
+                    <input type="text" id="campoCercaFilm" placeholder="Cerca titolo nel database...">
+                    <button class="btn btn-outline btn-sm" onclick="cercaFilmPerPlaylist()">Cerca</button>
+                </div>
+                <div id="risultatiRicercaFilm"></div>
+
+                <h3 class="sub-title">Il film non c'è? Aggiungilo manualmente</h3>
+                <div class="manual-box">
+                    <input type="text" id="manualeTitolo" placeholder="Titolo">
+                    <input type="number" id="manualeAnno" placeholder="Anno">
+                    <input type="text" id="manualeLocandina" placeholder="URL locandina (opzionale)">
+                    <textarea id="manualeTrama" placeholder="Trama (opzionale)"></textarea>
+                    <button class="btn" onclick="aggiungiFilmManuale()">Aggiungi e inserisci in playlist</button>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         const API_URL = "https://effective-space-barnacle-qv775v5wqgpgfpr6-8000.app.github.dev";
         let playlistApertaId = null;
 
-        // Al caricamento della pagina, controllo se l'utente ha un token salvato
         window.onload = () => {
             const token = localStorage.getItem("session_token");
             if (!token) {
@@ -109,33 +449,30 @@
                 const playlist = await risposta.json();
 
                 if (!risposta.ok) {
-                    contenitore.innerHTML = `<p>Errore: ${playlist.detail}</p>`;
+                    contenitore.innerHTML = `<p class="empty-note">Errore: ${playlist.detail}</p>`;
                     return;
                 }
 
                 if (playlist.length === 0) {
-                    contenitore.innerHTML = "<p><i>Non hai ancora creato nessuna playlist.</i></p>";
+                    contenitore.innerHTML = "<p class='empty-note'>Non hai ancora creato nessuna playlist.</p>";
                     return;
                 }
 
                 contenitore.innerHTML = "";
                 playlist.forEach(p => {
                     const divP = document.createElement("div");
-                    divP.style.border = "1px solid #ccc";
-                    divP.style.padding = "12px";
-                    divP.style.borderRadius = "6px";
-                    divP.style.cursor = "pointer";
+                    divP.className = "playlist-card";
                     divP.innerHTML = `
-                        <h4 style="margin:0 0 6px 0;">${p.nome} ${p.pubblico ? "" : "🔒"}</h4>
-                        <p style="margin:0; font-size: 13px; color:#555;">${p.descrizione || ""}</p>
-                        <p style="margin:4px 0 0 0; font-size: 12px; color:#888;">${p.film_id.length} film</p>
+                        <h4>${p.nome} ${p.pubblico ? "" : "🔒"}</h4>
+                        <p>${p.descrizione || ""}</p>
+                        <div class="count">${p.film_id.length} film</div>
                     `;
                     divP.onclick = () => apriDettaglioPlaylist(p.id);
                     contenitore.appendChild(divP);
                 });
             } catch (errore) {
                 console.error("Errore:", errore);
-                contenitore.innerHTML = "<p>Errore nel caricamento delle playlist.</p>";
+                contenitore.innerHTML = "<p class='empty-note'>Errore nel caricamento delle playlist.</p>";
             }
         }
 
@@ -154,19 +491,19 @@
             document.getElementById("dettaglioNome").textContent = playlist.nome;
             document.getElementById("dettaglioDescrizione").textContent = playlist.descrizione || "";
             document.getElementById("dettaglioPlaylist").style.display = "block";
+            document.getElementById("dettaglioPlaylist").scrollIntoView({ behavior: "smooth", block: "start" });
             document.getElementById("risultatiRicercaFilm").innerHTML = "";
             document.getElementById("campoCercaFilm").value = "";
 
             await mostraFilmPlaylist(playlist.film_id);
         }
 
-        // Per ogni film_id salvato nella playlist, recupero i dettagli e li mostro
         async function mostraFilmPlaylist(filmIds) {
             const lista = document.getElementById("dettaglioFilmLista");
             lista.innerHTML = "";
 
             if (filmIds.length === 0) {
-                lista.innerHTML = "<li><i>Nessun film ancora inserito.</i></li>";
+                lista.innerHTML = "<li class='empty-note' style='background:none; border:none;'>Nessun film ancora inserito.</li>";
                 return;
             }
 
@@ -175,8 +512,8 @@
                     const risposta = await fetch(`${API_URL}/film/${idFilm}`);
                     const film = await risposta.json();
                     const li = document.createElement("li");
-                    li.innerHTML = `${film.titolo} (${film.anno})
-                        <button onclick="rimuoviFilmDaPlaylist(${idFilm})" style="margin-left:8px; cursor:pointer;">Rimuovi</button>`;
+                    li.innerHTML = `<span>${film.titolo} (${film.anno})</span>
+                        <button class="btn btn-danger btn-sm" onclick="rimuoviFilmDaPlaylist(${idFilm})">Rimuovi</button>`;
                     lista.appendChild(li);
                 } catch (errore) {
                     console.error("Errore nel recupero del film:", errore);
@@ -199,15 +536,14 @@
             contenitore.innerHTML = "";
 
             if (risultati.length === 0) {
-                contenitore.innerHTML = "<p>Nessun film trovato nel database locale. Puoi aggiungerlo manualmente qui sotto.</p>";
+                contenitore.innerHTML = "<p class='empty-note'>Nessun film trovato nel database locale. Puoi aggiungerlo manualmente qui sotto.</p>";
                 return;
             }
 
             risultati.forEach(film => {
                 const divFilm = document.createElement("div");
-                divFilm.style.padding = "6px 0";
-                divFilm.innerHTML = `${film.titolo} (${film.anno})
-                    <button onclick="aggiungiFilmAllaPlaylist(${film.id})" style="margin-left:8px; cursor:pointer;">Aggiungi</button>`;
+                divFilm.innerHTML = `<span>${film.titolo} (${film.anno})</span>
+                    <button class="btn btn-outline btn-sm" onclick="aggiungiFilmAllaPlaylist(${film.id})">Aggiungi</button>`;
                 contenitore.appendChild(divFilm);
             });
         }
@@ -244,8 +580,6 @@
             }
         }
 
-        // Se il film cercato non esiste nel DB locale, lo creo a mano
-        // e poi lo aggiungo direttamente alla playlist aperta
         async function aggiungiFilmManuale() {
             const token = localStorage.getItem("session_token");
             const titolo = document.getElementById("manualeTitolo").value;
