@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManiaci - Le mie Playlist</title>
+    <link rel="stylesheet" href="../css/playlist.css">
+</head>
+<body>
+
+    <nav class="top-nav">
+        <span class="brand">CineManiaci</span>
+        <div class="nav-links">
+            <a href="login.html">Accedi</a>
+            <a href="catalogo.html">Catalogo</a>
+            <a href="playlist.html" class="active">Le mie Playlist</a>
+        </div>
+    </nav>
+    <div class="ruler-divider"></div>
+
+    <main>
+        <div class="eyebrow">Le tue raccolte</div>
+        <h1 class="page-title">Le mie playlist</h1>
+        <p class="page-sub">Organizza i tuoi film preferiti in raccolte personalizzate.</p>
+
+        <p id="messaggioLogin">
+            Devi effettuare il <a href="login.html">login</a> per vedere e creare le tue playlist.
+        </p>
+
+        <div id="areaPlaylist" style="display:none;">
+
+            <div class="card">
+                <h3>Crea una nuova playlist</h3>
+                <div class="field-row">
+                    <input type="text" id="nuovoNome" placeholder="Nome playlist">
+                    <input type="text" id="nuovaDescrizione" placeholder="Descrizione (opzionale)">
+                    <label class="check"><input type="checkbox" id="nuovoPubblico" checked> Pubblica</label>
+                    <button class="btn" onclick="creaPlaylist()">Crea</button>
+                </div>
+            </div>
+
+            <h2 class="section-title">Le mie liste</h2>
+            <div id="listaPlaylist" class="playlist-grid"></div>
+
+            <div id="dettaglioPlaylist" class="ticket">
+                <div class="ticket-top">
+                    <h2 id="dettaglioNome"></h2>
+                    <p id="dettaglioDescrizione"></p>
+                </div>
+
+                <h3 class="sub-title">Film nella playlist</h3>
+                <ul id="dettaglioFilmLista"></ul>
+
+                <h3 class="sub-title">Aggiungi un film dal catalogo</h3>
+                <div class="search-inline">
+                    <input type="text" id="campoCercaFilm" placeholder="Cerca titolo nel database...">
+                    <button class="btn btn-outline btn-sm" onclick="cercaFilmPerPlaylist()">Cerca</button>
+                </div>
+                <div id="risultatiRicercaFilm"></div>
+
+                <h3 class="sub-title">Il film non c'è? Aggiungilo manualmente</h3>
+                <div class="manual-box">
+                    <input type="text" id="manualeTitolo" placeholder="Titolo">
+                    <input type="number" id="manualeAnno" placeholder="Anno">
+                    <input type="text" id="manualeLocandina" placeholder="URL locandina (opzionale)">
+                    <textarea id="manualeTrama" placeholder="Trama (opzionale)"></textarea>
+                    <button class="btn" onclick="aggiungiFilmManuale()">Aggiungi e inserisci in playlist</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/playlist.js"></script>
+</body>
+</html>

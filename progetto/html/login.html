@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManiaci - Accedi</title>
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+
+    <nav class="top-nav">
+        <span class="brand">CineManiaci</span>
+        <div class="nav-links">
+            <a href="login.html" class="active">Accedi</a>
+            <a href="catalogo.html">Catalogo</a>
+            <a href="playlist.html">Le mie Playlist</a>
+        </div>
+    </nav>
+    <div class="ruler-divider"></div>
+
+    <main>
+        <div class="eyebrow">Accesso riservato</div>
+        <h1 class="page-title">Bentornato<br>al cinema.</h1>
+        <p class="page-sub">Accedi o registrati per creare le tue playlist e commentare i film.</p>
+
+        <div class="card">
+            <h3>Nuovo qui? Registrati</h3>
+            <p class="hint">Crea un account per iniziare a costruire le tue playlist.</p>
+            <div class="field-row">
+                <input type="text" id="regUser" placeholder="Scegli uno username">
+                <input type="password" id="regPass" placeholder="Scegli una password">
+                <button class="btn" onclick="eseguiRegistrazione()">Registrati</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Hai già un account? Accedi</h3>
+            <p class="hint">Inserisci le tue credenziali per ottenere il tuo token di sessione.</p>
+            <div class="field-row">
+                <input type="text" id="logUser" placeholder="Username">
+                <input type="password" id="logPass" placeholder="Password">
+                <button class="btn" onclick="eseguiLogin()">Accedi</button>
+                <button class="btn btn-danger" onclick="eseguiLogout()">Esci</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Area riservata</h3>
+            <p class="hint">Verifica che il tuo token sia attivo interrogando il profilo protetto.</p>
+            <button class="btn btn-outline" onclick="controllaMioProfilo()">Controlla il mio profilo</button>
+            <div id="boxRisultato" class="result-box"></div>
+        </div>
+    </main>
+
+    <script src="../js/login.js"></script>
+</body>
+</html>

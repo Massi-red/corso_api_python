@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManiaci - Catalogo</title>
+    <link rel="stylesheet" href="../css/catalogo.css">
+</head>
+<body>
+
+    <nav class="top-nav">
+        <span class="brand">CineManiaci</span>
+        <div class="nav-links">
+            <a href="login.html">Accedi</a>
+            <a href="catalogo.html" class="active">Catalogo</a>
+            <a href="playlist.html">Le mie Playlist</a>
+        </div>
+    </nav>
+    <div class="ruler-divider"></div>
+
+    <main>
+        <div class="eyebrow">Archivio film</div>
+        <h1 class="page-title">Cerca un film</h1>
+        <p class="page-sub">Cerca tra i titoli archiviati nel database locale della piattaforma.</p>
+
+        <div class="search-bar">
+            <input type="text" id="campoCerca" placeholder="Scrivi una parte del titolo (es. Matrix)...">
+            <button class="btn" onclick="avviaRicerca()">Cerca</button>
+        </div>
+
+        <h2 class="section-title">Risultati nel database locale</h2>
+        <div id="risultati" class="film-grid"></div>
+
+        <div id="schedaFilm" class="ticket">
+            <div class="ticket-top">
+                <img id="schedaImmagine" src="" alt="Locandina del film" style="display:none;">
+                <div>
+                    <h2 id="schedaTitolo"></h2>
+                    <div class="meta">Anno di uscita — <span id="schedaAnno"></span></div>
+                    <p class="plot" id="schedaTrama"></p>
+                </div>
+            </div>
+
+            <h3 class="sub-title">Video e commenti</h3>
+            <div id="listaVideo"></div>
+
+            <div class="add-video-box">
+                <h3 class="sub-title" style="font-size:16px;">Aggiungi un video o una recensione (richiede login)</h3>
+                <input type="text" id="nuovoVideoUrl" placeholder="Link YouTube">
+                <textarea id="nuovoVideoCommento" placeholder="Commento (opzionale)"></textarea>
+                <button class="btn" onclick="aggiungiVideo()">Pubblica</button>
+            </div>
+        </div>
+
+        <h2 class="section-title">Cerca anche online (OMDb)</h2>
+        <p class="page-sub">Se non trovi il film nel database locale, cercalo online e importalo con un click.</p>
+        <div class="search-bar">
+            <input type="text" id="campoCercaEsterno" placeholder="Cerca su OMDb (es. Inception)...">
+            <button class="btn btn-outline" onclick="avviaRicercaEsterna()">Cerca online</button>
+        </div>
+        <div id="risultatiEsterni"></div>
+    </main>
+
+    <script src="../js/catalogo.js"></script>
+</body>
+</html>
