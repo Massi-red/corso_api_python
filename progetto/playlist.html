@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineManiaci - Le mie Playlist</title>
+</head>
+<body style="font-family: sans-serif; max-width: 900px; margin: 30px auto; padding: 20px; line-height: 1.5;">
+
+    <nav style="margin-bottom: 20px;">
+        <a href="login.html">Login</a> |
+        <a href="catalogo.html">Catalogo</a> |
+        <a href="playlist.html">Le mie Playlist</a>
+    </nav>
+
+    <h1>🎞️ Le mie Playlist</h1>
+    <p id="messaggioLogin" style="color:#dc2626; font-weight:bold; display:none;">
+        Devi effettuare il <a href="login.html">login</a> per vedere e creare le tue playlist.
+    </p>
+
+    <div id="areaPlaylist" style="display:none;">
+
+        <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+            <h3 style="margin-top:0;">Crea una nuova Playlist</h3>
+            <input type="text" id="nuovoNome" placeholder="Nome playlist" style="padding: 6px; margin-right: 5px;">
+            <input type="text" id="nuovaDescrizione" placeholder="Descrizione (opzionale)" style="padding: 6px; margin-right: 5px;">
+            <label><input type="checkbox" id="nuovoPubblico" checked> Pubblica</label>
+            <button onclick="creaPlaylist()" style="padding: 6px 12px; cursor:pointer;">Crea</button>
+        </div>
+
+        <h2>Le mie liste</h2>
+        <div id="listaPlaylist" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;"></div>
+
+        <hr>
+
+        <!-- Dettaglio playlist selezionata -->
+        <div id="dettaglioPlaylist" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:20px; border-radius:8px;">
+            <h2 id="dettaglioNome" style="color:#16a34a; margin-top:0;"></h2>
+            <p id="dettaglioDescrizione" style="font-style: italic;"></p>
+
+            <h3>Film nella playlist</h3>
+            <ul id="dettaglioFilmLista"></ul>
+
+            <h3>Aggiungi un film dal catalogo</h3>
+            <input type="text" id="campoCercaFilm" placeholder="Cerca titolo nel database..." style="padding: 6px; width: 260px;">
+            <button onclick="cercaFilmPerPlaylist()" style="padding: 6px 12px; cursor:pointer;">Cerca</button>
+            <div id="risultatiRicercaFilm" style="margin-top: 10px;"></div>
+
+            <h3>Il film non c'è? Aggiungilo manualmente</h3>
+            <div style="background:#e0f2fe; padding:15px; border-radius:6px;">
+                <input type="text" id="manualeTitolo" placeholder="Titolo" style="padding:6px; margin-bottom:6px; width:220px;"><br>
+                <input type="number" id="manualeAnno" placeholder="Anno" style="padding:6px; margin-bottom:6px; width:220px;"><br>
+                <input type="text" id="manualeLocandina" placeholder="URL locandina (opzionale)" style="padding:6px; margin-bottom:6px; width:220px;"><br>
+                <textarea id="manualeTrama" placeholder="Trama (opzionale)" style="padding:6px; margin-bottom:6px; width:220px; height:50px;"></textarea><br>
+                <button onclick="aggiungiFilmManuale()" style="padding: 6px 12px; cursor:pointer;">Aggiungi e inserisci in playlist</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://effective-space-barnacle-qv775v5wqgpgfpr6-8000.app.github.dev";
+        let playlistApertaId = null;
+
+        // Al caricamento della pagina, controllo se l'utente ha un token salvato
+        window.onload = () => {
+            const token = localStorage.getItem("session_token");
+            if (!token) {
+                document.getElementById("messaggioLogin").style.display = "block";
+                return;
+            }
+            document.getElementById("areaPlaylist").style.display = "block";
+            caricaMiePlaylist();
+        };
+
+        async function creaPlaylist() {
+            const token = localStorage.getItem("session_token");
+            const nome = document.getElementById("nuovoNome").value;
+            const descrizione = document.getElementById("nuovaDescrizione").value;
+            const pubblico = document.getElementById("nuovoPubblico").checked;
+
+            if (!nome.trim()) {
+                alert("Inserisci un nome per la playlist!");
+                return;
+            }
+
+            const risposta = await fetch(`${API_URL}/playlist?token=${token}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome, descrizione: descrizione || null, pubblico })
+            });
+
+            const dati = await risposta.json();
+            if (risposta.ok) {
+                document.getElementById("nuovoNome").value = "";
+                document.getElementById("nuovaDescrizione").value = "";
+                await caricaMiePlaylist();
+            } else {
+                alert("Errore: " + dati.detail);
+            }
+        }
+
+        async function caricaMiePlaylist() {
+            const token = localStorage.getItem("session_token");
+            const contenitore = document.getElementById("listaPlaylist");
+            contenitore.innerHTML = "Caricamento...";
+
+            try {
+                const risposta = await fetch(`${API_URL}/playlist/mie?token=${token}`);
+                const playlist = await risposta.json();
+
+                if (!risposta.ok) {
+                    contenitore.innerHTML = `<p>Errore: ${playlist.detail}</p>`;
+                    return;
+                }
+
+                if (playlist.length === 0) {
+                    contenitore.innerHTML = "<p><i>Non hai ancora creato nessuna playlist.</i></p>";
+                    return;
+                }
+
+                contenitore.innerHTML = "";
+                playlist.forEach(p => {
+                    const divP = document.createElement("div");
+                    divP.style.border = "1px solid #ccc";
+                    divP.style.padding = "12px";
+                    divP.style.borderRadius = "6px";
+                    divP.style.cursor = "pointer";
+                    divP.innerHTML = `
+                        <h4 style="margin:0 0 6px 0;">${p.nome} ${p.pubblico ? "" : "🔒"}</h4>
+                        <p style="margin:0; font-size: 13px; color:#555;">${p.descrizione || ""}</p>
+                        <p style="margin:4px 0 0 0; font-size: 12px; color:#888;">${p.film_id.length} film</p>
+                    `;
+                    divP.onclick = () => apriDettaglioPlaylist(p.id);
+                    contenitore.appendChild(divP);
+                });
+            } catch (errore) {
+                console.error("Errore:", errore);
+                contenitore.innerHTML = "<p>Errore nel caricamento delle playlist.</p>";
+            }
+        }
+
+        async function apriDettaglioPlaylist(idPlaylist) {
+            const token = localStorage.getItem("session_token");
+            playlistApertaId = idPlaylist;
+
+            const risposta = await fetch(`${API_URL}/playlist/${idPlaylist}?token=${token}`);
+            const playlist = await risposta.json();
+
+            if (!risposta.ok) {
+                alert("Errore: " + playlist.detail);
+                return;
+            }
+
+            document.getElementById("dettaglioNome").textContent = playlist.nome;
+            document.getElementById("dettaglioDescrizione").textContent = playlist.descrizione || "";
+            document.getElementById("dettaglioPlaylist").style.display = "block";
+            document.getElementById("risultatiRicercaFilm").innerHTML = "";
+            document.getElementById("campoCercaFilm").value = "";
+
+            await mostraFilmPlaylist(playlist.film_id);
+        }
+
+        // Per ogni film_id salvato nella playlist, recupero i dettagli e li mostro
+        async function mostraFilmPlaylist(filmIds) {
+            const lista = document.getElementById("dettaglioFilmLista");
+            lista.innerHTML = "";
+
+            if (filmIds.length === 0) {
+                lista.innerHTML = "<li><i>Nessun film ancora inserito.</i></li>";
+                return;
+            }
+
+            for (const idFilm of filmIds) {
+                try {
+                    const risposta = await fetch(`${API_URL}/film/${idFilm}`);
+                    const film = await risposta.json();
+                    const li = document.createElement("li");
+                    li.innerHTML = `${film.titolo} (${film.anno})
+                        <button onclick="rimuoviFilmDaPlaylist(${idFilm})" style="margin-left:8px; cursor:pointer;">Rimuovi</button>`;
+                    lista.appendChild(li);
+                } catch (errore) {
+                    console.error("Errore nel recupero del film:", errore);
+                }
+            }
+        }
+
+        async function cercaFilmPerPlaylist() {
+            const keyword = document.getElementById("campoCercaFilm").value;
+            const contenitore = document.getElementById("risultatiRicercaFilm");
+
+            if (!keyword.trim()) {
+                alert("Inserisci un testo per la ricerca!");
+                return;
+            }
+
+            const risposta = await fetch(`${API_URL}/film/ricerca?keyword=${encodeURIComponent(keyword)}`);
+            const risultati = await risposta.json();
+
+            contenitore.innerHTML = "";
+
+            if (risultati.length === 0) {
+                contenitore.innerHTML = "<p>Nessun film trovato nel database locale. Puoi aggiungerlo manualmente qui sotto.</p>";
+                return;
+            }
+
+            risultati.forEach(film => {
+                const divFilm = document.createElement("div");
+                divFilm.style.padding = "6px 0";
+                divFilm.innerHTML = `${film.titolo} (${film.anno})
+                    <button onclick="aggiungiFilmAllaPlaylist(${film.id})" style="margin-left:8px; cursor:pointer;">Aggiungi</button>`;
+                contenitore.appendChild(divFilm);
+            });
+        }
+
+        async function aggiungiFilmAllaPlaylist(idFilm) {
+            const token = localStorage.getItem("session_token");
+
+            const risposta = await fetch(`${API_URL}/playlist/${playlistApertaId}/film?token=${token}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ film_id: idFilm })
+            });
+
+            const dati = await risposta.json();
+            if (risposta.ok) {
+                await apriDettaglioPlaylist(playlistApertaId);
+            } else {
+                alert("Errore: " + dati.detail);
+            }
+        }
+
+        async function rimuoviFilmDaPlaylist(idFilm) {
+            const token = localStorage.getItem("session_token");
+
+            const risposta = await fetch(`${API_URL}/playlist/${playlistApertaId}/film/${idFilm}?token=${token}`, {
+                method: "DELETE"
+            });
+
+            const dati = await risposta.json();
+            if (risposta.ok) {
+                await apriDettaglioPlaylist(playlistApertaId);
+            } else {
+                alert("Errore: " + dati.detail);
+            }
+        }
+
+        // Se il film cercato non esiste nel DB locale, lo creo a mano
+        // e poi lo aggiungo direttamente alla playlist aperta
+        async function aggiungiFilmManuale() {
+            const token = localStorage.getItem("session_token");
+            const titolo = document.getElementById("manualeTitolo").value;
+            const anno = document.getElementById("manualeAnno").value;
+            const urlLocandina = document.getElementById("manualeLocandina").value;
+            const trama = document.getElementById("manualeTrama").value;
+
+            if (!titolo.trim()) {
+                alert("Inserisci almeno il titolo del film!");
+                return;
+            }
+
+            const rispostaCrea = await fetch(`${API_URL}/film`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    titolo,
+                    trama: trama || null,
+                    anno: anno ? parseInt(anno) : null,
+                    url_locandina: urlLocandina || null
+                })
+            });
+
+            const filmCreato = await rispostaCrea.json();
+            if (!rispostaCrea.ok) {
+                alert("Errore nella creazione del film: " + filmCreato.detail);
+                return;
+            }
+
+            await aggiungiFilmAllaPlaylist(filmCreato.id);
+
+            document.getElementById("manualeTitolo").value = "";
+            document.getElementById("manualeAnno").value = "";
+            document.getElementById("manualeLocandina").value = "";
+            document.getElementById("manualeTrama").value = "";
+        }
+    </script>
+</body>
+</html>
