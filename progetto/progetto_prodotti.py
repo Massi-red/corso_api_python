@@ -14,7 +14,7 @@ def lista_prodotti():
     cursor.execute("SELECT * FROM prodotti")
     risultato = cursor.fetchall()
     conn.close()
-    return risultato
+    return [dict(row) for row in risultato]
 
 # Espongo la chiamata per listare uno specifico prodotto
 @router.get("/prodotti/{id_prodotto}")
@@ -28,7 +28,7 @@ def lista_prodotto_singolo(id_prodotto: int):
     
     if risultato is None:
         raise HTTPException(status_code=404, detail="Prodotto non trovato")
-    return risultato
+    return dict(risultato)
 
 # Espongo la chiamata per inserire un nuovo prodotto
 @router.post("/prodotti", status_code=201)
